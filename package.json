@@ -1,0 +1,50 @@
+{
+  "name": "cashcow",
+  "version": "0.0.0",
+  "description": "cashcow is a cache fetcher that pools consumers and minimises memory usage",
+  "main": "lib/animates.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/karma start --single-run && node_modules/.bin/standard"
+  },
+  "author": {
+    "name": "Alan Clarke",
+    "email": "alan@qubit.com",
+    "url": "qubit.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QubitProducts/cashcow.git"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "es6-promise": "^3.2.1",
+    "expect.js": "^0.3.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-mocha": "^0.2.2",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^1.7.0",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.4",
+    "sinon-expect": "^0.3.0",
+    "standard": "^6.0.8",
+    "webpack": "^1.12.14"
+  },
+  "dependencies": {},
+  "standard": {
+    "ignore": [
+      "node_modules"
+    ],
+    "globals": [
+      "describe",
+      "beforeEach",
+      "afterEach",
+      "before",
+      "after",
+      "it"
+    ]
+  }
+}
