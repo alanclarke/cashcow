@@ -25,7 +25,7 @@ cashcow is not prescriptive about what cache your using, simply provide it with 
 - setCache(key, value) a function that persists a value to the cache
 - fetch(key) a function that fetches the value for real and returns a promise for that value
 
-## Usage:
+## usage:
 ```js
 var cashcow = require('cashcow')
 var cowFetch = cashcow(getCache, setCache, fetch)
@@ -52,4 +52,9 @@ function setCache (key) {
 function fetch (key) {
   return getForRealz(key)
 }
+```
+
+## run tests
+```
+npm test
 ```
