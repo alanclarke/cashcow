@@ -4,7 +4,7 @@ module.exports = function cashcow (getCache, setCache, fetch) {
   return function cowFetch (egg) {
     if (farm[egg]) return farm[egg]
     farm[egg] = getCache(egg).then(moo)
-    return farm[egg].catch(opps)
+    return farm[egg].catch(oops)
 
     function moo (yolk) {
       if (yolk) return cleanup(yolk)
@@ -17,13 +17,13 @@ module.exports = function cashcow (getCache, setCache, fetch) {
       })
     }
 
-    function opps (err) {
-      return cleanup(err)
-    }
-
     function cleanup (yolk) {
       delete farm[egg]
       return yolk
+    }
+
+    function oops (err) {
+      throw cleanup(err)
     }
   }
 }

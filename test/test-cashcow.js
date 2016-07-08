@@ -26,16 +26,19 @@ describe('cowFetch', function () {
     beforeEach(function () {
       cache.a = 1
     })
+
     it('should not fetch for realz', function () {
       return cowFetch('a').then(() => {
         expect(fetch).was.notCalled()
       })
     })
+
     it('should get from cache', function () {
       return cowFetch('a').then(() => {
         expect(getCache).was.calledOnce()
       })
     })
+
     it('should return the result', function () {
       return cowFetch('a').then((result) => {
         expect(result).to.eql(1)
@@ -55,9 +58,9 @@ describe('cowFetch', function () {
     it('should propagate rejected promise to all consumers if cache fails', function () {
       cowFetch = cashcow(reject, setCache, fetch)
       return Promise.all([
-        cowFetch('a').catch((err) => err),
-        cowFetch('a').catch((err) => err),
-        cowFetch('a').catch((err) => err)
+        catcher(cowFetch('a')),
+        catcher(cowFetch('a')),
+        catcher(cowFetch('a'))
       ])
       .then(function (results) {
         results.forEach(function (result) {
@@ -73,7 +76,7 @@ describe('cowFetch', function () {
         .onFirstCall().returns(Promise.reject(new Error('derp')))
         .onSecondCall().returns(Promise.resolve(cache.a))
       cowFetch = cashcow(eventuallyWorks, setCache, fetch)
-      var firstFetch = cowFetch('a').catch((err) => err)
+      var firstFetch = catcher(cowFetch('a'))
       return Promise.all([
         firstFetch,
         firstFetch.then(function () { return cowFetch('a') })
@@ -90,22 +93,26 @@ describe('cowFetch', function () {
     beforeEach(function () {
       db.a = 1
     })
+
     it('should fetch for realz', function () {
       return cowFetch('a').then(() => {
         expect(fetch).was.calledOnce()
       })
     })
+
     it('should have hydrated the cache', function () {
       return cowFetch('a').then(() => {
         expect(setCache).was.calledOnce()
         expect(cache.a).to.eql(1)
       })
     })
+
     it('should return the result', function () {
       return cowFetch('a').then((result) => {
         expect(result).to.eql(1)
       })
     })
+
     it('should share the results with any consumers that request the resource in the meantime', function () {
       return Promise.all([
         cowFetch('a'),
@@ -116,12 +123,13 @@ describe('cowFetch', function () {
         expect(getCache).was.calledOnce()
       })
     })
+
     it('should propagate rejected promise to all consumers if hydrate fails', function () {
       cowFetch = cashcow(getCache, reject, fetch)
       return Promise.all([
-        cowFetch('a').catch((err) => err),
-        cowFetch('a').catch((err) => err),
-        cowFetch('a').catch((err) => err)
+        catcher(cowFetch('a')),
+        catcher(cowFetch('a')),
+        catcher(cowFetch('a'))
       ])
       .then(function (results) {
         results.forEach(function (result) {
@@ -137,7 +145,7 @@ describe('cowFetch', function () {
         .onFirstCall().returns(Promise.reject(new Error('derp')))
         .onSecondCall().returns(Promise.resolve())
       cowFetch = cashcow(getCache, eventuallyWorks, fetch)
-      var firstFetch = cowFetch('a').catch((err) => err)
+      var firstFetch = catcher(cowFetch('a'))
       return Promise.all([
         firstFetch,
         firstFetch.then(function () { return cowFetch('a') })
@@ -152,9 +160,9 @@ describe('cowFetch', function () {
     it('should propagate rejected promise to all consumers if fetch fails', function () {
       cowFetch = cashcow(getCache, setCache, reject)
       return Promise.all([
-        cowFetch('a').catch((err) => err),
-        cowFetch('a').catch((err) => err),
-        cowFetch('a').catch((err) => err)
+        catcher(cowFetch('a')),
+        catcher(cowFetch('a')),
+        catcher(cowFetch('a'))
       ])
       .then(function (results) {
         results.forEach(function (result) {
@@ -170,7 +178,11 @@ describe('cowFetch', function () {
         .onFirstCall().returns(Promise.reject(new Error('derp')))
         .onSecondCall().returns(Promise.resolve(db.a))
       cowFetch = cashcow(getCache, setCache, eventuallyWorks)
-      var firstFetch = cowFetch('a').catch((err) => err)
+      var firstFetch = cowFetch('a').then(function (err) {
+        return err
+      }, function (err) {
+        return err
+      })
       return Promise.all([
         firstFetch,
         firstFetch.then(function () { return cowFetch('a') })
@@ -183,6 +195,14 @@ describe('cowFetch', function () {
     })
   })
 })
+
+function catcher (promise) {
+  return promise.then(function wut () {
+    throw new Error('expected promise to be rejected')
+  }, function ahh (err) {
+    return err
+  })
+}
 
 function reject () {
   return Promise.reject(new Error('derp'))
