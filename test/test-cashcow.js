@@ -69,7 +69,7 @@ describe('cowFetch', function () {
       })
     })
 
-    it('should recover if getCache starts working again', function () {
+    it('should recover if get starts working again', function () {
       var eventuallyWorks = sinon.stub()
       eventuallyWorks
         .onFirstCall().returns(Promise.reject(new Error('derp')))
