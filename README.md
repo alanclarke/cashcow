@@ -22,7 +22,7 @@ why?
 cashcow is not prescriptive about what cache your using, simply provide it with these three methods:
 
 - getCache(key) a function that gets value from cache and returns a promise for that value
-- setCache(key, value) a function that persists a value to the cache
+- setCache(key, value) a function that persists a value to the cache and returns a promise that resolves when completed
 - fetch(key) a function that fetches the value for real and returns a promise for that value
 
 ## usage:
