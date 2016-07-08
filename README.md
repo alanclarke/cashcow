@@ -21,9 +21,8 @@ why?
 
 cashcow is not prescriptive about what cache your using, simply provide it with these three methods:
 
-- getCache(key) a function that gets value from cache and returns a promise for that value
-- setCache(key, value) a function that persists a value to the cache and returns a promise that resolves when completed
-- fetch(key) a function that fetches the value for real and returns a promise for that value
+- fetch(key) a function that gets value from cache and returns a promise for that value
+- hydrate(key) a function that gets the value for real and hydrates the cache, returning a promise that resolves when complete
 
 ## installation
 ```
@@ -33,7 +32,7 @@ npm install cashcow
 ## usage
 ```js
 var cashcow = require('cashcow')
-var cowFetch = cashcow(getCache, setCache, fetch)
+var cowFetch = cashcow(fetch, hydrate)
 
 cowFetch('mything') // gets for real
 cowFetch('mything') // combined with previous fetch
@@ -46,16 +45,14 @@ cowFetch('mything').then(function (thing) {
   })
 })
 
-function getCache (key) {
+function fetch (key) {
   return myCustomCache.getFromMars(key)
 }
 
-function setCache (key) {
-  return myCustomCache.set(key)
-}
-
-function fetch (key) {
-  return getForRealz(key)
+function hydrate (key) {
+  return get(key).then(function (val) {
+    return myCustomCache.set(key, val)
+  })
 }
 ```
 

@@ -5,16 +5,12 @@ module.exports = function createHelpers (sandbox, cashcow) {
   var cache = {}
 
   function fetch (key) {
-    return Promise.resolve(db[key])
-  }
-
-  function getCache (key) {
     return Promise.resolve(cache[key])
   }
 
-  function setCache (key, value) {
+  function hydrate (key, value) {
     return new Promise(function resolver (resolve, reject) {
-      cache[key] = value
+      cache[key] = db[key]
       resolve()
     })
   }
@@ -23,7 +19,6 @@ module.exports = function createHelpers (sandbox, cashcow) {
     db: db,
     cache: cache,
     fetch: sandbox.spy(fetch),
-    getCache: sandbox.spy(getCache),
-    setCache: sandbox.spy(setCache)
+    hydrate: sandbox.spy(hydrate)
   }
 }
