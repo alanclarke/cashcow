@@ -50,7 +50,7 @@ function fetch (key) {
 }
 
 function hydrate (key) {
-  return get(key).then(function (val) {
+  return getForRealz(key).then(function (val) {
     return myCustomCache.set(key, val)
   })
 }
