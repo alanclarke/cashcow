@@ -7,13 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node_modules/.bin/karma start --single-run && node_modules/.bin/mocha && node_modules/.bin/standard"
+    "test": "karma start --single-run && node_modules/.bin/mocha && node_modules/.bin/standard"
   },
-  "author": {
-    "name": "Alan Clarke",
-    "email": "alan@qubit.com",
-    "url": "qubit.com"
-  },
+  "author": "Alan Clarke <alan@qubit.com> (qubit.com)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/QubitProducts/cashcow.git"
@@ -46,5 +42,12 @@
       "after",
       "it"
     ]
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/QubitProducts/cashcow/issues"
+  },
+  "homepage": "https://github.com/QubitProducts/cashcow#readme",
+  "keywords": [
+    "cache"
+  ]
 }
