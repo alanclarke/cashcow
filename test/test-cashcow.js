@@ -5,16 +5,16 @@ var sinon = require('sinon')
 var expect = require('sinon-expect').enhance(require('expect.js'), sinon, 'was')
 
 describe('cowFetch', function () {
-  var sandbox, helpers, db, cache, hydrate, fetch, cowFetch
+  var sandbox, helpers, db, cache, get, populate, cowFetch
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create()
     helpers = helperAPI(sandbox, cashcow)
     db = helpers.db
     cache = helpers.cache
-    hydrate = helpers.hydrate
-    fetch = helpers.fetch
-    cowFetch = cashcow(fetch, hydrate)
+    populate = helpers.populate
+    get = helpers.get
+    cowFetch = cashcow(get, populate)
   })
 
   afterEach(function () {
@@ -26,15 +26,15 @@ describe('cowFetch', function () {
       cache.a = 1
     })
 
-    it('should try to fetch from cache', function () {
+    it('should try to get from cache', function () {
       return cowFetch('a').then(() => {
-        expect(fetch).was.calledOnce()
+        expect(get).was.calledOnce()
       })
     })
 
-    it('should not hydrate', function () {
+    it('should not populate', function () {
       return cowFetch('a').then(() => {
-        expect(hydrate).was.notCalled()
+        expect(populate).was.notCalled()
       })
     })
 
@@ -50,12 +50,12 @@ describe('cowFetch', function () {
         cowFetch('a'),
         cowFetch('a')
       ]).then(function () {
-        expect(fetch).was.calledOnce()
+        expect(get).was.calledOnce()
       })
     })
 
-    it('should propagate rejected promise to all consumers if fetch fails', function () {
-      cowFetch = cashcow(reject, hydrate)
+    it('should propagate rejected promise to all consumers if get fails', function () {
+      cowFetch = cashcow(reject, populate)
       return Promise.all([
         catcher(cowFetch('a')),
         catcher(cowFetch('a')),
@@ -74,7 +74,7 @@ describe('cowFetch', function () {
       eventuallyWorks
         .onFirstCall().returns(Promise.reject(new Error('derp')))
         .onSecondCall().returns(Promise.resolve(cache.a))
-      cowFetch = cashcow(eventuallyWorks, hydrate)
+      cowFetch = cashcow(eventuallyWorks, populate)
       var firstFetch = catcher(cowFetch('a'))
       return Promise.all([
         firstFetch,
@@ -93,22 +93,22 @@ describe('cowFetch', function () {
       db.a = 1
     })
 
-    it('should try to fetch from cache', function () {
+    it('should try to get from cache', function () {
       return cowFetch('a').then(() => {
-        expect(fetch).was.called()
+        expect(get).was.called()
       })
     })
 
-    it('should hydrate', function () {
+    it('should populate', function () {
       return cowFetch('a').then(() => {
-        expect(hydrate).was.calledOnce()
+        expect(populate).was.calledOnce()
         expect(cache.a).to.eql(1)
       })
     })
 
-    it('should try to fetch from cache again', function () {
+    it('should try to get from cache again', function () {
       return cowFetch('a').then(() => {
-        expect(fetch).was.calledTwice()
+        expect(get).was.calledTwice()
       })
     })
 
@@ -124,13 +124,13 @@ describe('cowFetch', function () {
         cowFetch('a'),
         cowFetch('a')
       ]).then(function () {
-        expect(fetch).was.calledTwice()
-        expect(hydrate).was.calledOnce()
+        expect(get).was.calledTwice()
+        expect(populate).was.calledOnce()
       })
     })
 
-    it('should propagate rejected promise to all consumers if hydrate fails', function () {
-      cowFetch = cashcow(fetch, reject)
+    it('should propagate rejected promise to all consumers if populate fails', function () {
+      cowFetch = cashcow(get, reject)
       return Promise.all([
         catcher(cowFetch('a')),
         catcher(cowFetch('a')),
@@ -144,14 +144,14 @@ describe('cowFetch', function () {
       })
     })
 
-    it('should recover if hydrate starts working again', function () {
+    it('should recover if populate starts working again', function () {
       var callCount = 0
       var eventuallyWorks = sinon.spy(function () {
         if (!callCount++) return Promise.reject(new Error('derp'))
         cache.a = db.a
         return Promise.resolve()
       })
-      cowFetch = cashcow(fetch, eventuallyWorks)
+      cowFetch = cashcow(get, eventuallyWorks)
       var firstFetch = catcher(cowFetch('a'))
       return Promise.all([
         firstFetch,
@@ -166,8 +166,8 @@ describe('cowFetch', function () {
       })
     })
 
-    it('should propagate rejected promise to all consumers if fetch fails', function () {
-      cowFetch = cashcow(reject, hydrate)
+    it('should propagate rejected promise to all consumers if get fails', function () {
+      cowFetch = cashcow(reject, populate)
       return Promise.all([
         catcher(cowFetch('a')),
         catcher(cowFetch('a')),
@@ -181,12 +181,12 @@ describe('cowFetch', function () {
       })
     })
 
-    it('should recover if fetch starts working again', function () {
+    it('should recover if get starts working again', function () {
       var eventuallyWorks = sinon.stub()
       eventuallyWorks
         .onFirstCall().returns(Promise.reject(new Error('derp')))
         .onSecondCall().returns(Promise.resolve(db.a))
-      cowFetch = cashcow(eventuallyWorks, hydrate)
+      cowFetch = cashcow(eventuallyWorks, populate)
       var firstFetch = cowFetch('a').then(function (err) {
         return err
       }, function (err) {

@@ -21,8 +21,8 @@ why?
 
 cashcow is not prescriptive about what cache your using, simply provide it with these three methods:
 
-- fetch(key) a function that gets value from cache and returns a promise for that value
-- hydrate(key) a function that gets the value for real and hydrates the cache, returning a promise that resolves when complete
+- get(key) a function that gets value from cache and returns a promise for that value
+- populate(key) a function that populates the cache, returning a promise that resolves when complete
 
 ## installation
 ```
