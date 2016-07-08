@@ -4,7 +4,7 @@ module.exports = function cashcow (getCache, setCache, fetch) {
   return function cowFetch (egg) {
     if (farm[egg]) return farm[egg]
     farm[egg] = getCache(egg).then(moo)
-    return farm[egg].catch(oops)
+    return farm[egg].catch(cowpat)
 
     function moo (yolk) {
       if (yolk) return cleanup(yolk)
@@ -12,9 +12,11 @@ module.exports = function cashcow (getCache, setCache, fetch) {
     }
 
     function hydrate (yolk) {
-      return setCache(egg, yolk).then(function win () {
+      return setCache(egg, yolk).then(huzzah)
+
+      function huzzah () {
         return cleanup(yolk)
-      })
+      }
     }
 
     function cleanup (yolk) {
@@ -22,7 +24,7 @@ module.exports = function cashcow (getCache, setCache, fetch) {
       return yolk
     }
 
-    function oops (err) {
+    function cowpat (err) {
       throw cleanup(err)
     }
   }
