@@ -51,6 +51,39 @@ describe('cowFetch', function () {
         expect(getCache).was.calledOnce()
       })
     })
+
+    it('should propagate rejected promise to all consumers if cache fails', function () {
+      cowFetch = cashcow(reject, setCache, fetch)
+      return Promise.all([
+        cowFetch('a').catch((err) => err),
+        cowFetch('a').catch((err) => err),
+        cowFetch('a').catch((err) => err)
+      ])
+      .then(function (results) {
+        results.forEach(function (result) {
+          expect(result).to.be.a(Error)
+          expect(result.message).to.eql('derp')
+        })
+      })
+    })
+
+    it('should recover if getCache starts working again', function () {
+      var eventuallyWorks = sinon.stub()
+      eventuallyWorks
+        .onFirstCall().returns(Promise.reject(new Error('derp')))
+        .onSecondCall().returns(Promise.resolve(cache.a))
+      cowFetch = cashcow(eventuallyWorks, setCache, fetch)
+      var firstFetch = cowFetch('a').catch((err) => err)
+      return Promise.all([
+        firstFetch,
+        firstFetch.then(function () { return cowFetch('a') })
+      ])
+      .then(function (results) {
+        expect(results[0]).to.be.a(Error)
+        expect(results[0].message).to.eql('derp')
+        expect(results[1]).to.eql(1)
+      })
+    })
   })
 
   describe('if the cache does not exist', function () {
@@ -83,5 +116,74 @@ describe('cowFetch', function () {
         expect(getCache).was.calledOnce()
       })
     })
+    it('should propagate rejected promise to all consumers if hydrate fails', function () {
+      cowFetch = cashcow(getCache, reject, fetch)
+      return Promise.all([
+        cowFetch('a').catch((err) => err),
+        cowFetch('a').catch((err) => err),
+        cowFetch('a').catch((err) => err)
+      ])
+      .then(function (results) {
+        results.forEach(function (result) {
+          expect(result).to.be.a(Error)
+          expect(result.message).to.eql('derp')
+        })
+      })
+    })
+
+    it('should recover if setCache starts working again', function () {
+      var eventuallyWorks = sinon.stub()
+      eventuallyWorks
+        .onFirstCall().returns(Promise.reject(new Error('derp')))
+        .onSecondCall().returns(Promise.resolve())
+      cowFetch = cashcow(getCache, eventuallyWorks, fetch)
+      var firstFetch = cowFetch('a').catch((err) => err)
+      return Promise.all([
+        firstFetch,
+        firstFetch.then(function () { return cowFetch('a') })
+      ])
+      .then(function (results) {
+        expect(results[0]).to.be.a(Error)
+        expect(results[0].message).to.eql('derp')
+        expect(results[1]).to.eql(1)
+      })
+    })
+
+    it('should propagate rejected promise to all consumers if fetch fails', function () {
+      cowFetch = cashcow(getCache, setCache, reject)
+      return Promise.all([
+        cowFetch('a').catch((err) => err),
+        cowFetch('a').catch((err) => err),
+        cowFetch('a').catch((err) => err)
+      ])
+      .then(function (results) {
+        results.forEach(function (result) {
+          expect(result).to.be.a(Error)
+          expect(result.message).to.eql('derp')
+        })
+      })
+    })
+
+    it('should recover if fetch starts working again', function () {
+      var eventuallyWorks = sinon.stub()
+      eventuallyWorks
+        .onFirstCall().returns(Promise.reject(new Error('derp')))
+        .onSecondCall().returns(Promise.resolve(db.a))
+      cowFetch = cashcow(getCache, setCache, eventuallyWorks)
+      var firstFetch = cowFetch('a').catch((err) => err)
+      return Promise.all([
+        firstFetch,
+        firstFetch.then(function () { return cowFetch('a') })
+      ])
+      .then(function (results) {
+        expect(results[0]).to.be.a(Error)
+        expect(results[0].message).to.eql('derp')
+        expect(results[1]).to.eql(1)
+      })
+    })
   })
 })
+
+function reject () {
+  return Promise.reject(new Error('derp'))
+}

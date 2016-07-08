@@ -5,15 +5,11 @@ module.exports = function createHelpers (sandbox, cashcow) {
   var cache = {}
 
   function fetch (key) {
-    return new Promise(function resolver (resolve, reject) {
-      resolve(db[key])
-    })
+    return Promise.resolve(db[key])
   }
 
   function getCache (key) {
-    return new Promise(function resolver (resolve, reject) {
-      resolve(cache[key])
-    })
+    return Promise.resolve(cache[key])
   }
 
   function setCache (key, value) {
