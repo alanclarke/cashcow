@@ -1,5 +1,4 @@
-# ![cashcow](https://cloud.githubusercontent.com/assets/640611/16666936/be6cfe96-4481-11e6-9962-44e7bbe6a537.png)
-
+# ![cashcow](https://cloud.githubusercontent.com/assets/640611/16708914/d14dee66-45f9-11e6-9334-a153eeb9144f.png)
 
 A smart cached value fetcher that...
 
@@ -10,7 +9,7 @@ A smart cached value fetcher that...
 cashcow is not prescriptive about what cache your using, simply provide it with two functions:
 
 - get(key) a function that gets value from cache and returns a promise for that value
-- populate(key) a function that populates the cache, returning a promise that resolves when complete
+- populate(key) optionally provide function that populates the cache, returning a promise that resolves when complete
 
 ## installation
 ```

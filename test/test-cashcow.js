@@ -106,6 +106,24 @@ describe('cowFetch', function () {
       })
     })
 
+    describe('if populate is not provided', function () {
+      beforeEach(function () {
+        cowFetch = cashcow(get)
+      })
+
+      it('should not populate', function () {
+        return cowFetch('a').then((result) => {
+          expect(populate).was.notCalled()
+        })
+      })
+
+      it('should return undefined', function () {
+        return cowFetch('a').then((result) => {
+          expect(result).to.eql(undefined)
+        })
+      })
+    })
+
     it('should try to get from cache again', function () {
       return cowFetch('a').then(() => {
         expect(get).was.calledTwice()

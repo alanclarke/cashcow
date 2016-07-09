@@ -7,8 +7,8 @@ module.exports = function cashcow (get, populate) {
     return farm[egg].catch(cowpat)
 
     function moo (yolk) {
-      if (typeof yolk !== 'undefined') return mop(yolk)
-      return populate(egg).then(huzzah)
+      if (populate) if (yolk === void 0) return populate(egg).then(huzzah)
+      return mop(yolk)
     }
 
     function huzzah () {
