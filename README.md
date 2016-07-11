@@ -9,7 +9,7 @@ A smart cached value fetcher that...
 cashcow is not prescriptive about what cache your using, simply provide it with two functions:
 
 - get(key) a function that gets value from cache and returns a promise for that value
-- populate(key) optionally provide function that populates the cache, returning a promise that resolves when complete
+- populate(key) optionally provide function that populates the cache and returns a promise for the value when complete
 
 ## installation
 ```

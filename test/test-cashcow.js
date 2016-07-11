@@ -124,6 +124,50 @@ describe('cowFetch', function () {
       })
     })
 
+    describe('if populate returns the result', function () {
+      beforeEach(function () {
+        populate = sinon.spy(function (key) {
+          cache[key] = db[key]
+          return Promise.resolve(cache[key])
+        })
+        cowFetch = cashcow(get, populate)
+      })
+
+      it('should only call get once', function () {
+        return cowFetch('a').then((result) => {
+          expect(get).was.calledOnce()
+        })
+      })
+
+      it('should return the result', function () {
+        return cowFetch('a').then((result) => {
+          expect(result).to.eql(db.a)
+        })
+      })
+
+      it('should recover if populate starts working again', function () {
+        var callCount = 0
+        var eventuallyWorks = sinon.spy(function (key) {
+          if (!callCount++) return Promise.reject(new Error('derp'))
+          cache[key] = db[key]
+          return Promise.resolve(db[key])
+        })
+        cowFetch = cashcow(get, eventuallyWorks)
+        var firstFetch = catcher(cowFetch('a'))
+        return Promise.all([
+          firstFetch,
+          firstFetch.then(function () {
+            return cowFetch('a')
+          })
+        ])
+        .then(function (results) {
+          expect(results[0]).to.be.a(Error)
+          expect(results[0].message).to.eql('derp')
+          expect(results[1]).to.eql(1)
+        })
+      })
+    })
+
     it('should try to get from cache again', function () {
       return cowFetch('a').then(() => {
         expect(get).was.calledTwice()

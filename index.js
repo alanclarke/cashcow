@@ -11,7 +11,8 @@ module.exports = function cashcow (get, populate) {
       return mop(yolk)
     }
 
-    function huzzah () {
+    function huzzah (yolk) {
+      if (yolk !== void 0) return mop(yolk)
       return get(egg).then(mop)
     }
 
