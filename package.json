@@ -1,6 +1,6 @@
 {
   "name": "cashcow",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "cashcow is a smart cache fetcher that pools consumers and minimises memory usage",
   "main": "index.js",
   "directories": {
