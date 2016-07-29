@@ -35,14 +35,14 @@ function populate (key) {
 }
 
 // usage
-cowFetch('mything') // populates cache then returns value from cache
-cowFetch('mything') // combined with previous fetch
-cowFetch('mything').then(function (thing) {
+cowFetch(key) // populates cache then returns val from cache
+cowFetch(key) // combined with previous fetch
+cowFetch(key).then(function (val) {
   // cache has been populated
-  cowFetch('mything') // gets from cache
-  cowFetch('mything') // combined with previous fetch
-  cowFetch('mything').then(function (thing) {
-    cowFetch('mything') // requests again from cache
+  cowFetch(key) // gets from cache
+  cowFetch(key) // combined with previous fetch
+  cowFetch(key).then(function (val) {
+    cowFetch(key) // requests again from cache
   })
 })
 
@@ -58,16 +58,16 @@ function get (key) {
   })
 }
 
-function populate (key) {
+function populate () {
   return fetchAllFromSource().then(myCache.hydrateAll)
 }
 
-//usage
-get(key) // gets from cache, populates entire cache
-get(key) // call to populate combined with previous call
+// usage
+get(key) // fetches from cache, calls populates to populate entire cache
+get(key) // call to populate combined with previous one
 get(key).then(function (val) {
-  // value fetched straight from cache
-  get(key) // value fetched straight from cache
+  // cache has been populated
+  get(key) // val fetched straight from cache
 })
 ```
 
