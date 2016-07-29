@@ -18,9 +18,23 @@ npm install cashcow
 
 ## usage
 ```js
+
+// scenario 1: lazy population of individual cache keys
+
 var cashcow = require('cashcow')
 var cowFetch = cashcow(get, populate)
 
+function get (key) {
+  return myCache.get(key)
+}
+
+function populate (key) {
+  return fetchFromSource(key).then(function (val) {
+    return myCache.set(key, val)
+  })
+}
+
+// usage
 cowFetch('mything') // populates cache then returns value from cache
 cowFetch('mything') // combined with previous fetch
 cowFetch('mything').then(function (thing) {
@@ -32,15 +46,29 @@ cowFetch('mything').then(function (thing) {
   })
 })
 
+
+// scenario 2: lazy population of entire cache
+
+var cashcow = require('cashcow')
+var cowFetch = cashcow(populate)
+
 function get (key) {
-  return myCustomCache.get(key)
+  return myCache.get(key).then(function (val) {
+    if (!val) return cowFetch().then(() => get(key))
+  })
 }
 
 function populate (key) {
-  return fetchFromSource(key).then(function (val) {
-    return myCustomCache.set(key, val)
-  })
+  return fetchAllFromSource().then(myCache.hydrateAll)
 }
+
+//usage
+get(key) // gets from cache, populates entire cache
+get(key) // call to populate combined with previous call
+get(key).then(function (val) {
+  // value fetched straight from cache
+  get(key) // value fetched straight from cache
+})
 ```
 
 ## run tests
