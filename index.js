@@ -2,7 +2,7 @@ module.exports = function cashcow (get, populate) {
   var farm = {}
 
   return function cowFetch (egg) {
-    let slurry = arguments
+    var slurry = arguments
     if (farm[egg]) return farm[egg]
     farm[egg] = get.apply(null, slurry).then(moo)
     return farm[egg].catch(cowpat)
