@@ -267,6 +267,60 @@ describe('cowFetch', function () {
       })
     })
   })
+
+  describe('multiple input arguments', function () {
+    beforeEach(function () {
+      const key = (a1, a2, a3, a4) => [a1, a2, a3, a4].filter(Boolean).join('')
+      const get = (a1, a2, a3, a4) => Promise.resolve(cache[key(a1, a2, a3, a4)])
+      const populate = (a1, a2, a3, a4, value) => new Promise((resolve, reject) => {
+        cache[key(a1, a2, a3, a4)] = db[key(a1, a2, a3, a4)]
+        resolve()
+      })
+      cowFetch = cashcow(get, populate)
+    })
+
+    it('should retrieve the value when not cached', function () {
+      db.abc = 1
+      return cowFetch('a', 'b', 'c').then(val => {
+        expect(val).to.equal(1)
+        expect(cache.abc).to.equal(1)
+      })
+    })
+
+    it('should retrieve the value when cached', function () {
+      cache.abc = 2
+      return cowFetch('a', 'b', 'c').then(val => {
+        expect(val).to.equal(2)
+        expect(cache.abc).to.equal(2)
+      })
+    })
+
+    it('should produce values for overlapping key hierarchies', function () {
+      db.ab = 2
+      db.abc = 3
+      db.abcd = 4
+      db.f = 5
+      return Promise.all([
+        cowFetch('a', 'b', 'c'),
+        cowFetch('a', 'b', 'c'),
+        cowFetch('a', 'b'),
+        cowFetch('a', 'b'),
+        cowFetch('a', 'b', 'c', 'd'),
+        cowFetch('f')
+      ]).then(vals => {
+        expect(vals[0]).to.equal(3)
+        expect(vals[1]).to.equal(3)
+        expect(vals[2]).to.equal(2)
+        expect(vals[3]).to.equal(2)
+        expect(vals[4]).to.equal(4)
+        expect(vals[5]).to.equal(5)
+        expect(cache.ab).to.equal(2)
+        expect(cache.abc).to.equal(3)
+        expect(cache.abcd).to.equal(4)
+        expect(cache.f).to.equal(5)
+      })
+    })
+  })
 })
 
 function catcher (promise) {
